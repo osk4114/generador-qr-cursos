@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador QR - Cursos de Reducción de Puntos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-center">
+                <i class="fas fa-qrcode text-3xl text-indigo-600 mr-3"></i>
+                <h1 class="text-3xl font-bold text-gray-800">Generador QR</h1>
+            </div>
+            <p class="text-center text-gray-600 mt-2">Cursos de Reducción de Puntos</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Tabs -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="flex border-b">
+                    <button id="tab-url" class="flex-1 py-4 px-6 text-center font-medium text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50">
+                        <i class="fas fa-link mr-2"></i>Generar desde URL
+                    </button>
+                    <button id="tab-file" class="flex-1 py-4 px-6 text-center font-medium text-gray-500 hover:text-indigo-600 hover:bg-gray-50">
+                        <i class="fas fa-file-upload mr-2"></i>Generar desde Archivo
+                    </button>
+                </div>
+
+                <!-- URL Tab Content -->
+                <div id="content-url" class="p-6">
+                    <form id="form-url" class="space-y-6">
+                        <div>
+                            <label for="course-name-url" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nombre del Curso (Opcional)
+                            </label>
+                            <input 
+                                type="text" 
+                                id="course-name-url" 
+                                name="courseName"
+                                placeholder="Ej: Curso de Conducción Segura"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            >
+                        </div>
+                        <div>
+                            <label for="url-input" class="block text-sm font-medium text-gray-700 mb-2">
+                                URL del Curso *
+                            </label>
+                            <input 
+                                type="url" 
+                                id="url-input" 
+                                name="url"
+                                placeholder="https://ejemplo.com/curso-reduccion-puntos"
+                                required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            >
+                        </div>
+                        <button 
+                            type="submit"
+                            class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-200 font-medium"
+                        >
+                            <i class="fas fa-qrcode mr-2"></i>Generar Código QR
+                        </button>
+                    </form>
+                </div>
+
+                <!-- File Tab Content -->
+                <div id="content-file" class="p-6 hidden">
+                    <form id="form-file" class="space-y-6">
+                        <div>
+                            <label for="course-name-file" class="block text-sm font-medium text-gray-700 mb-2">
+                                Nombre del Curso (Opcional)
+                            </label>
+                            <input 
+                                type="text" 
+                                id="course-name-file" 
+                                name="courseName"
+                                placeholder="Ej: Curso de Conducción Segura"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            >
+                        </div>
+                        <div>
+                            <label for="file-input" class="block text-sm font-medium text-gray-700 mb-2">
+                                Archivo del Curso *
+                            </label>
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-indigo-400 transition-colors">
+                                <div class="space-y-1 text-center">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                                    <div class="flex text-sm text-gray-600">
+                                        <label for="file-input" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none">
+                                            <span>Subir archivo</span>
+                                            <input id="file-input" name="file" type="file" class="sr-only" required>
+                                        </label>
+                                        <p class="pl-1">o arrastra y suelta</p>
+                                    </div>
+                                    <p class="text-xs text-gray-500">PDF, DOC, DOCX, JPG, PNG hasta 10MB</p>
+                                </div>
+                            </div>
+                            <div id="file-preview" class="mt-4 hidden">
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-sm text-gray-700">
+                                        <i class="fas fa-file mr-2"></i>
+                                        <span id="file-name"></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <button 
+                            type="submit"
+                            class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition duration-200 font-medium"
+                        >
+                            <i class="fas fa-qrcode mr-2"></i>Generar Código QR
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div id="loading" class="hidden mt-8 text-center">
+                <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-indigo-500">
+                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Generando código QR...
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div id="result" class="hidden mt-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">
+                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                        ¡Código QR Generado!
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="text-center">
+                            <img id="qr-image" src="" alt="Código QR" class="mx-auto border rounded-lg shadow-md">
+                            <button id="download-qr" class="mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition duration-200">
+                                <i class="fas fa-download mr-2"></i>Descargar QR
+                            </button>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Curso:</label>
+                                <p id="result-course" class="text-gray-900 font-medium"></p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Enlace:</label>
+                                <p id="result-url" class="text-blue-600 break-all"></p>
+                            </div>
+                            <div id="result-file-info" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700">Archivo:</label>
+                                <p id="result-filename" class="text-gray-900"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-16">
+        <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+            <p>&copy; 2025 Generador QR para Cursos de Reducción de Puntos</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

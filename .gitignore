@@ -1,0 +1,11 @@
+node_modules/
+*.log
+.env
+.DS_Store
+uploads/*.pdf
+uploads/*.doc
+uploads/*.docx
+uploads/*.jpg
+uploads/*.png
+uploads/*.jpeg
+public/qr-codes/*.png
