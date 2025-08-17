@@ -5,8 +5,30 @@ const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 
+// Cargar variables de entorno
+require('dotenv').config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Función para obtener la URL base correcta
+function getBaseUrl(req) {
+  // Si hay una variable de entorno para la URL base, usarla
+  if (process.env.BASE_URL) {
+    return process.env.BASE_URL;
+  }
+  
+  // Detectar URL pública de VS Code (GitHub Codespaces/Port Forwarding)
+  const forwardedHost = req.get('x-forwarded-host');
+  const forwardedProto = req.get('x-forwarded-proto');
+  
+  if (forwardedHost) {
+    return `${forwardedProto || 'https'}://${forwardedHost}`;
+  }
+  
+  // Fallback a la URL local
+  return `${req.protocol}://${req.get('host')}`;
+}
 
 // Configuración de middleware
 app.use(cors());
@@ -47,6 +69,19 @@ if (!fs.existsSync('public/qr-codes')) {
 // Ruta principal
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Endpoint para configurar/obtener la URL base (útil para debugging)
+app.get('/api/config', (req, res) => {
+  const baseUrl = getBaseUrl(req);
+  res.json({
+    baseUrl: baseUrl,
+    host: req.get('host'),
+    forwardedHost: req.get('x-forwarded-host'),
+    forwardedProto: req.get('x-forwarded-proto'),
+    protocol: req.protocol,
+    environment: process.env.NODE_ENV || 'development'
+  });
 });
 
 // Generar QR desde URL
@@ -97,7 +132,9 @@ app.post('/generate-qr-file', upload.single('file'), async (req, res) => {
     }
 
     const { courseName } = req.body;
-    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    
+    const baseUrl = getBaseUrl(req);
+    const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
     
     const filename = `qr-${Date.now()}.png`;
     const qrPath = path.join(__dirname, 'public', 'qr-codes', filename);
